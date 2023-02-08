@@ -1,15 +1,15 @@
 package sse
 
 import (
+	"context"
+	"encoding/json"
+	. "github.com/aandryashin/matchers"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 	"time"
-	. "github.com/aandryashin/matchers"
-	"encoding/json"
-	"context"
-	"io/ioutil"
 )
 
 type MockBroker struct {
@@ -24,7 +24,7 @@ func (mb *MockBroker) Notify(data []byte) {
 	mb.messages <- string(data)
 }
 
-func (mb *MockBroker) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+func (mb *MockBroker) ServeHTTP(rw http.ResponseWriter, _ *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 }
 
@@ -33,9 +33,9 @@ func TestTick(t *testing.T) {
 	broker := &MockBroker{messages: make(chan string, 10)}
 	stop := make(chan os.Signal)
 	go Tick(broker, func(ctx context.Context, br Broker) {
-		req, _ := http.NewRequest("GET", srv.URL + "/status", nil)
+		req, _ := http.NewRequest("GET", srv.URL+"/status", nil)
 		resp, _ := http.DefaultClient.Do(req)
-		data, _ := ioutil.ReadAll(resp.Body)
+		data, _ := io.ReadAll(resp.Body)
 		br.Notify(data)
 	}, 10*time.Millisecond, stop)
 	time.Sleep(50 * time.Millisecond)

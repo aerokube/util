@@ -1,9 +1,9 @@
 package sse
 
 import (
+	"context"
 	"os"
 	"time"
-	"context"
 )
 
 func Tick(broker Broker, notify func(context.Context, Broker), period time.Duration, stop chan os.Signal) {
@@ -21,7 +21,6 @@ func Tick(broker Broker, notify func(context.Context, Broker), period time.Durat
 			{
 				cancel()
 				ticker.Stop()
-				os.Exit(0)
 			}
 		}
 	}

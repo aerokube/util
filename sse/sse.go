@@ -91,26 +91,26 @@ func (sse *SseBroker) HasClients() bool {
 	return len(sse.clients) > 0
 }
 
-func (broker *SseBroker) listen() {
+func (sse *SseBroker) listen() {
 	for {
 		select {
-		case s := <-broker.newClients:
+		case s := <-sse.newClients:
 			{
-				broker.lock.Lock()
-				broker.clients[s] = true
-				broker.lock.Unlock()
-				log.Printf("Client added. %d registered clients", len(broker.clients))
+				sse.lock.Lock()
+				sse.clients[s] = true
+				sse.lock.Unlock()
+				log.Printf("Client added. %d registered clients", len(sse.clients))
 			}
-		case s := <-broker.closingClients:
+		case s := <-sse.closingClients:
 			{
-				broker.lock.Lock()
-				delete(broker.clients, s)
-				broker.lock.Unlock()
-				log.Printf("Removed client. %d registered clients", len(broker.clients))
+				sse.lock.Lock()
+				delete(sse.clients, s)
+				sse.lock.Unlock()
+				log.Printf("Removed client. %d registered clients", len(sse.clients))
 			}
-		case event := <-broker.notifier:
+		case event := <-sse.notifier:
 			{
-				for clientMessageChan := range broker.clients {
+				for clientMessageChan := range sse.clients {
 					select {
 					case clientMessageChan <- event:
 					case <-time.After(patience):
