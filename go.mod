@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/aandryashin/matchers v0.0.0-20161126170413-435295ea180e
-	github.com/docker/docker v24.0.1+incompatible
+	github.com/docker/docker v24.0.7+incompatible
 )
 
 require (
